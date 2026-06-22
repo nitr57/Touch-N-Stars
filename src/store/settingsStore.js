@@ -108,6 +108,10 @@ export const useSettingsStore = defineStore('settings', {
     guider: {
       phd2ForceCalibration: false,
       phd2ImageGamma: 0.5,
+      // Native PHD2 GUI embedding (xpra HTML5). Port the xpra session binds its
+      // HTML5 server to on the backend host. urlOverride wins when set.
+      phd2NativeGuiPort: 14500,
+      phd2NativeGuiUrlOverride: '',
     },
     instanceColorClasses: [
       'bg-gray-900/95',

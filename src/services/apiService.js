@@ -314,6 +314,25 @@ const apiService = {
     }
   },
 
+  // ---- Native PHD2 GUI embed (xpra HTML5 session) ----
+  async getPhd2GuiStatus() {
+    const { API_URL } = getUrls();
+    const response = await axios.get(`${API_URL}phd2-gui/status`);
+    return response.data;
+  },
+
+  async startPhd2Gui(params = {}) {
+    const { API_URL } = getUrls();
+    const response = await axios.post(`${API_URL}phd2-gui/start`, params);
+    return response.data;
+  },
+
+  async stopPhd2Gui(display) {
+    const { API_URL } = getUrls();
+    const response = await axios.post(`${API_URL}phd2-gui/stop`, { display });
+    return response.data;
+  },
+
   async setPHD2StopGuiding() {
     try {
       const { API_URL } = getUrls();
@@ -2250,6 +2269,41 @@ const apiService = {
       // console.error('Error retrieving logs result:', error);
       throw error;
     }
+  },
+
+  // Integrated PHD2 guider (libphd2core): dedicated guide-camera selection.
+  getIntegratedGuiderCameras() {
+    const { BASE_URL } = getUrls();
+    return this._simpleGetRequest(`${BASE_URL}/equipment/guider/integrated/cameras`);
+  },
+
+  getIntegratedGuiderSelectedCamera() {
+    const { BASE_URL } = getUrls();
+    return this._simpleGetRequest(`${BASE_URL}/equipment/guider/integrated/selected-camera`);
+  },
+
+  selectIntegratedGuiderCamera(id) {
+    const { BASE_URL } = getUrls();
+    return this._simpleGetRequest(
+      `${BASE_URL}/equipment/guider/integrated/select-camera?id=${encodeURIComponent(id)}`
+    );
+  },
+
+  getIntegratedGuiderState() {
+    const { BASE_URL } = getUrls();
+    return this._simpleGetRequest(`${BASE_URL}/equipment/guider/integrated/state`);
+  },
+
+  async getIntegratedGuiderImage(scale = 1, quality = 90) {
+    const { BASE_URL } = getUrls();
+    const res = await this._simpleGetRequest(
+      `${BASE_URL}/equipment/guider/integrated/image?scale=${scale}&quality=${quality}`
+    );
+    // Response is a base64 JPEG/PNG payload; build a data URL for <img>.
+    if (res?.Success && res.Response) {
+      return `data:image/jpeg;base64,${res.Response}`;
+    }
+    return null;
   },
 
   //-------------------------------------  safety ---------------------------------------

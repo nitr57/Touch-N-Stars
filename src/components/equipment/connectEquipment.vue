@@ -103,6 +103,9 @@
       @open-config="openGuiderSettings"
     />
 
+    <!-- Integrated PHD2 guider: dedicated guide-camera selection (shown only when selected) -->
+    <selectIntegratedGuiderCam v-if="store.isPINS" :selectedGuiderDevice="selectedGuiderDevice" />
+
     <selectDevices
       apiAction="filterAction"
       :deviceName="$t('components.connectEquipment.filter.name')"
@@ -382,6 +385,7 @@ import { useGuiderStore } from '@/store/guiderStore';
 import apiService from '@/services/apiService';
 import selectDevices from '@/components/equipment/selectDevices.vue';
 import selectGuiderCam from '@/components/guider/PHD2/selectGuiderCam.vue';
+import selectIntegratedGuiderCam from '@/components/guider/PHD2/selectIntegratedGuiderCam.vue';
 import Modal from '@/components/helpers/Modal.vue';
 import settingsGuiderConnect from '@/components/guider/settingsGuiderConnect.vue';
 import SettingsSerialConnection from '@/components/equipment/SettingsSerialConnection.vue';

@@ -3,6 +3,9 @@
     <!-- PHD2 Mode: New layout with image background -->
     <Phd2GuiderLayout v-if="store.guiderInfo.DeviceId === 'PHD2_Single'" />
 
+    <!-- Integrated PHD2 guider (headless engine) -->
+    <IntegratedGuiderLayout v-else-if="store.guiderInfo.DeviceId === 'PHD2_Integrated'" />
+
     <!-- Non-PHD2 Mode: Original layout -->
     <template v-else>
       <div class="container max-w-3xl mx-auto p-4">
@@ -40,6 +43,7 @@ import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { apiStore } from '@/store/store';
 import { useGuiderStore } from '@/store/guiderStore';
 import Phd2GuiderLayout from '@/components/guider/PHD2/Phd2GuiderLayout.vue';
+import IntegratedGuiderLayout from '@/components/guider/PHD2/IntegratedGuiderLayout.vue';
 import ControlGuider from '@/components/guider/ControlGuider.vue';
 import GuiderStatus from '@/components/guider/GuiderStatus.vue';
 import { useI18n } from 'vue-i18n';

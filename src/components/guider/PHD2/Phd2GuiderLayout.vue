@@ -163,6 +163,16 @@
             </svg>
           </button>
 
+          <!-- Native GUI Button -->
+          <button
+            v-if="guiderStore.phd2Connection?.IsConnected"
+            @click="openNativeGui = true"
+            class="default-button-gray flex items-center justify-center px-3 py-3"
+            :title="$t('components.guider.phd2.nativeGui.open')"
+          >
+            <ComputerDesktopIcon class="w-5 h-5" />
+          </button>
+
           <!-- Settings Button -->
           <button
             v-if="guiderStore.phd2Connection?.IsConnected"
@@ -311,6 +321,16 @@
             </svg>
           </button>
 
+          <!-- Native GUI Button -->
+          <button
+            v-if="guiderStore.phd2Connection?.IsConnected"
+            @click="openNativeGui = true"
+            class="default-button-gray flex items-center justify-center px-3 py-3"
+            :title="$t('components.guider.phd2.nativeGui.open')"
+          >
+            <ComputerDesktopIcon class="w-5 h-5" />
+          </button>
+
           <!-- Settings Button -->
           <button
             v-if="guiderStore.phd2Connection?.IsConnected"
@@ -426,6 +446,9 @@
 
     <!-- Calibration Data Modal -->
     <CalibrationDataModal :show="openCalibrationData" @close="openCalibrationData = false" />
+
+    <!-- Native PHD2 GUI Modal (xpra HTML5 embed) -->
+    <Phd2NativeGuiModal :show="openNativeGui" @close="openNativeGui = false" />
   </div>
 </template>
 
@@ -434,7 +457,12 @@ import { ref, computed } from 'vue';
 import { apiStore } from '@/store/store';
 import { useGuiderStore } from '@/store/guiderStore';
 import { useSettingsStore } from '@/store/settingsStore';
-import { Cog6ToothIcon, StopIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
+import {
+  Cog6ToothIcon,
+  StopIcon,
+  ArrowPathIcon,
+  ComputerDesktopIcon,
+} from '@heroicons/vue/24/outline';
 import Phd2Settings from '@/components/guider/PHD2/Phd2Settings.vue';
 import Phd2Image from '@/components/guider/PHD2/Phd2Image.vue';
 import Phd2Guidstar from '@/components/guider/PHD2/Phd2Guidstar.vue';
@@ -442,6 +470,7 @@ import Phd2StarProfile from '@/components/guider/PHD2/Phd2StarProfile.vue';
 import Modal from '@/components/helpers/Modal.vue';
 import CalibrationAssistantModal from '@/components/guider/PHD2/CalibrationAssistantModal.vue';
 import CalibrationDataModal from '@/components/guider/PHD2/CalibrationDataModal.vue';
+import Phd2NativeGuiModal from '@/components/guider/PHD2/Phd2NativeGuiModal.vue';
 import apiService from '@/services/apiService';
 import { useI18n } from 'vue-i18n';
 import { useOrientation } from '@/composables/useOrientation';
@@ -454,6 +483,7 @@ const { t: $t } = useI18n();
 const openSettings = ref(false);
 const openCalibrationAssistant = ref(false);
 const openCalibrationData = ref(false);
+const openNativeGui = ref(false);
 const isProcessing = ref(false);
 const showStarImage = ref(false);
 const isAutoSelectingStar = ref(false);
