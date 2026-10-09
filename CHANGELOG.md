@@ -11,6 +11,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - PINS settings: Configure traditional disk swap to 2 GB (image default size), 4 GB, or 8 GB (recommended). Saving replaces zram after reboot, and the panel shows active system swap capacity. Requires an updated pinsdaemon.
 
+### Fixed
+
+- Guider (PINS): The native guider graph now has a clear button. It clears the graph and target plot in the current browser session while guiding continues.
+- Guider (PINS): The Guiding Coach no longer shows a time estimate for a step once it has started, so a step that runs long no longer reads like 5 min / 3 min. The time left counts only the steps still to come.
+
+### Added
+
+- Guider (PINS): New page for the PINS native guider with the live guide frame, guide graph, target plot, statistics, calibration, event log, settings and dark library; the guide camera is set up in equipment connect and the setup wizard. Critical guiding alerts are shown on every page. Thanks @aduffeck
+- Guider (PINS): Guiding Coach that measures the guide camera, the seeing and the mount, tries better settings and recommends what to change, with live hints while guiding. Thanks @aduffeck
+- Guider (PINS): Incidents tab with a replay of the frames and telemetry around the moments guiding went wrong, a likely cause, downloads and a Mark button to save a moment. Thanks @aduffeck
+
+### Changed
+
+- Guider (PINS): The statistics show how many frames the Window column covers, for example 100 frames.
+
 ## [App6.3.1-beta8] - 2026-09-30
 
 ### Changed

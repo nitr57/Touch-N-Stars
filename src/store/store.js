@@ -143,6 +143,8 @@ export const apiStore = defineStore('store', {
     lastEventHistoryFetch: 0,
     profileInfo: defaultProfileInfo(),
     cameraInfo: { Connected: false, IsExposing: false, BinningModes: [], ReadoutModes: [] },
+    // PINS' guide camera slot (/equipment/guidecamera). Stays disconnected against official NINA.
+    guideCameraInfo: { Connected: false, IsExposing: false, BinningModes: [] },
     mountInfo: { Connected: false, TrackingMode: null },
     filterInfo: { Connected: false },
     focuserInfo: { Connected: false, CanReverse: false, CanSetMaxStep: false },
@@ -199,6 +201,7 @@ export const apiStore = defineStore('store', {
     backendReachableTimeoutId: null,
     isMountConnected: false,
     isCameraConnected: false,
+    isGuideCameraConnected: false,
     isFilterConnected: false,
     isRotatorConnected: false,
     isFocuserConnected: false,
@@ -546,6 +549,10 @@ export const apiStore = defineStore('store', {
           requests.push(apiService.cameraAction('info'));
           requestMap[requests.length - 1] = 'cameraResponse';
         }
+        if (this.isGuideCameraConnected) {
+          requests.push(apiService.guideCameraAction('info'));
+          requestMap[requests.length - 1] = 'guideCameraResponse';
+        }
         if (this.isMountConnected) {
           requests.push(apiService.mountAction('info'));
           requestMap[requests.length - 1] = 'mountResponse';
@@ -598,6 +605,7 @@ export const apiStore = defineStore('store', {
         const responseData = {
           imageHistoryResponse: null,
           cameraResponse: null,
+          guideCameraResponse: null,
           mountResponse: null,
           filterResponse: null,
           rotatorResponse: null,
@@ -613,6 +621,8 @@ export const apiStore = defineStore('store', {
 
         let responseIndex = 0;
         if (this.isCameraConnected) responseData.cameraResponse = responses[responseIndex++];
+        if (this.isGuideCameraConnected)
+          responseData.guideCameraResponse = responses[responseIndex++];
         if (this.isMountConnected) responseData.mountResponse = responses[responseIndex++];
         if (this.isFilterConnected) responseData.filterResponse = responses[responseIndex++];
         if (this.isRotatorConnected) responseData.rotatorResponse = responses[responseIndex++];
@@ -678,6 +688,7 @@ export const apiStore = defineStore('store', {
       // Clear equipment connection flags
       this.isMountConnected = false;
       this.isCameraConnected = false;
+      this.isGuideCameraConnected = false;
       this.isFilterConnected = false;
       this.isRotatorConnected = false;
       this.isFocuserConnected = false;
@@ -690,6 +701,7 @@ export const apiStore = defineStore('store', {
 
       // Clear equipment info from previous instance
       this.cameraInfo = { Connected: false, IsExposing: false, BinningModes: [], ReadoutModes: [] };
+      this.guideCameraInfo = { Connected: false, IsExposing: false, BinningModes: [] };
       this.mountInfo = { Connected: false, TrackingMode: null };
       this.filterInfo = { Connected: false };
       this.focuserInfo = { Connected: false, CanReverse: false, CanSetMaxStep: false };
@@ -862,6 +874,7 @@ export const apiStore = defineStore('store', {
     handleApiResponses({
       imageHistoryResponse,
       cameraResponse,
+      guideCameraResponse,
       mountResponse,
       filterResponse,
       rotatorResponse,
@@ -882,6 +895,12 @@ export const apiStore = defineStore('store', {
         this.setInfoIfChanged('cameraInfo', cameraResponse.Response);
       } else if (cameraResponse) {
         console.error('Error in camera API response:', cameraResponse.Error);
+      }
+
+      if (guideCameraResponse?.Success) {
+        this.setInfoIfChanged('guideCameraInfo', guideCameraResponse.Response);
+      } else if (guideCameraResponse) {
+        console.error('Error in guide camera API response:', guideCameraResponse.Error);
       }
 
       if (mountResponse?.Success) {
@@ -1101,6 +1120,8 @@ export const apiStore = defineStore('store', {
       this.existingEquipmentList = [];
       const apiMapping = {
         CameraSettings: 'camera',
+        // PINS only; right after the camera so connectAll() connects it next.
+        GuideCameraSettings: 'guidecamera',
         DomeSettings: 'dome',
         FilterWheelSettings: 'filter',
         FocuserSettings: 'focuser',
@@ -1304,6 +1325,8 @@ export const apiStore = defineStore('store', {
           'MOUNT-DISCONNECTED',
           'CAMERA-CONNECTED',
           'CAMERA-DISCONNECTED',
+          'GUIDECAMERA-CONNECTED',
+          'GUIDECAMERA-DISCONNECTED',
           'FILTERWHEEL-CONNECTED',
           'FILTERWHEEL-DISCONNECTED',
           'ROTATOR-CONNECTED',
@@ -1365,6 +1388,7 @@ export const apiStore = defineStore('store', {
       const deviceMap = {
         MOUNT: 'isMountConnected',
         CAMERA: 'isCameraConnected',
+        GUIDECAMERA: 'isGuideCameraConnected',
         FILTERWHEEL: 'isFilterConnected',
         ROTATOR: 'isRotatorConnected',
         FOCUSER: 'isFocuserConnected',
@@ -1417,6 +1441,12 @@ export const apiStore = defineStore('store', {
       // the state stuck at the cleared defaults.
       if (!this.isCameraConnected)
         this.setInfoIfChanged('cameraInfo', { Connected: false, IsExposing: false });
+      if (!this.isGuideCameraConnected)
+        this.setInfoIfChanged('guideCameraInfo', {
+          Connected: false,
+          IsExposing: false,
+          BinningModes: [],
+        });
       if (!this.isMountConnected)
         this.setInfoIfChanged('mountInfo', { Connected: false, TrackingMode: null });
       if (!this.isFilterConnected) this.setInfoIfChanged('filterInfo', { Connected: false });
